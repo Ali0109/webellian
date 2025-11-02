@@ -1,48 +1,5 @@
 # Webellian Technical Task
 
-## 🛠️ Task Demonstration:
-
-Developed a Python FastAPI application for managing shop inventory. The application includes the following functionalities:
-
-## 📦 Catalog Management:
-
-- Functionality for retrieving a list of catalogs with pagination.
-- Functionality for add, update, or delete catalogs with async database connection and high throughput system performance.
-
-## 🛒 Product Management:
-
-- Retrieve a list of products within a specific catalog.
-- Create, update, or delete products.
-- Assign or remove a product from a catalog.
-
-## 📑 API Documentation and Testing:
-
-- Provided API documentation using Swagger (OpenAPI), which is built-in with FastAPI.
-- Application can be tested effectively via the auto-generated Swagger UI at http://localhost:9000/docs.
-
-## 🗄️ Database:
-
-- Persistent database PostgreSQL with ORM SQLAlchemy (async).
-- Database migrations using Alembic.
-- Clean architecture with ORM models, repositories, services, and routers.
-
-## ✅ Architecture:
-
-- **Model Layer**: ORM models (SQLAlchemy 2.0) representing Catalog and Product entities.
-- **Repository Layer**: Data access layer using async SQLAlchemy. Repositories accept and return Pydantic schemas.
-- **Service Layer**: Business logic layer (SRP) that uses repositories.
-- **Router Layer**: API endpoints (controllers) that use services with dependency injection.
-- **Schema Layer**: Pydantic models for API request/response validation with BaseSchema for common configuration.
-
-## 📂 Features Implemented:
-
-- ✅ Dependency injection using FastAPI Depends.
-- ✅ Unit tests with pytest and httpx.
-- ✅ Docker and Docker Compose setup.
-- ✅ Proper logging throughout the application.
-- ✅ Error handling with custom exceptions.
-- ✅ Async database operations for high performance.
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -77,19 +34,23 @@ docker-compose down
 
 1. Install dependencies using `uv`:
 ```bash
-uv pip install -e .
+# Install uv if not already installed
+pip install uv
+
+# Sync project dependencies
+uv sync
 ```
 
 2. Make sure PostgreSQL is running and update DATABASE_URL in `.env` file if needed.
 
 3. Run database migrations:
 ```bash
-alembic upgrade head
+uv run alembic upgrade head
 ```
 
 4. Run the application:
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 9000 --reload
+uv run uvicorn app.main:app --host 0.0.0.0 --port 9000 --reload
 ```
 
 ## 🧪 Running Tests
@@ -134,9 +95,7 @@ webellian/
 │   │       ├── get_product.py
 │   │       ├── get_product_list.py
 │   │       ├── update_product.py
-│   │       ├── delete_product.py
-│   │       ├── assign_to_catalog.py
-│   │       └── remove_from_catalog.py
+│   │       └── delete_product.py
 │   ├── routers/             # API endpoints (controllers)
 │   │   ├── catalogs.py
 │   │   └── products.py
@@ -154,9 +113,11 @@ webellian/
 │   └── test_products.py
 ├── Dockerfile
 ├── docker-compose.yml
-├── pyproject.toml            # Project configuration (uv, ruff)
+├── pyproject.toml            # Project configuration (dependencies, ruff, pytest)
 ├── alembic.ini              # Alembic configuration
 ├── Makefile                 # Development commands
+├── .gitignore               # Git ignore rules
+├── .dockerignore            # Docker ignore rules
 └── README.md
 ```
 
@@ -177,26 +138,26 @@ The project uses `uv` for package management:
 # Install uv if not already installed
 pip install uv
 
-# Install project dependencies
-uv pip install -e .
+# Sync project dependencies (creates virtual environment if needed)
+uv sync
 ```
 
 ### Code Quality
 
-The project uses `ruff` for linting and formatting:
+The project uses `ruff` for linting and formatting (configured in `pyproject.toml`):
 
 ```bash
 # Format code
 make format
 # or
-ruff format app tests
+uv run ruff format app tests
 
 # Lint code
 make lint
 # or
-ruff check app tests
+uv run ruff check app tests
 
-# Run all checks
+# Run all checks (format, lint, test)
 make dev
 ```
 
@@ -209,15 +170,38 @@ make test
 uv run pytest tests/ -v
 ```
 
-## 📝 Architecture Notes
+## ✅ Architecture
 
+- **Model Layer**: ORM models (SQLAlchemy 2.0) representing Catalog and Product entities.
+- **Repository Layer**: Data access layer using async SQLAlchemy. Repositories accept and return Pydantic schemas.
+- **Service Layer**: Business logic layer (SRP) that uses repositories.
+- **Router Layer**: API endpoints (controllers) that use services with dependency injection.
+- **Schema Layer**: Pydantic models for API request/response validation with BaseSchema for common configuration.
 - **Single Responsibility Principle (SRP)**: Each service class has a single responsibility (e.g., `CreateCatalog`, `UpdateCatalog`, etc.).
 - **Dependency Injection**: Services are injected into routers via FastAPI's `Depends`. Database transactions are managed by FastAPI's dependency system.
+- **Type Safety**: All functions and methods have type annotations for better code quality and IDE support.
 - **Async Operations**: All database operations are async for better performance.
 - **Clean Architecture**: The application follows clean architecture principles with clear separation of concerns:
   - Model layer: ORM models (SQLAlchemy 2.0 with Mapped syntax)
   - Repository layer: Data access (accepts and returns Pydantic schemas)
   - Service layer: Business logic (split by SRP)
-  - Router layer: API endpoints
+  - Router layer: API endpoints with return type annotations
+  - Schema layer: Pydantic models with BaseSchema for common configuration
 - **Logging**: Configured throughout the application for better observability.
 - **Code Quality**: The project uses `ruff` for linting and formatting (configured in `pyproject.toml`).
+- **Testing**: Comprehensive test suite using `pytest` with async support via `pytest-asyncio`.
+
+## 🗄️ Database:
+
+- Persistent database PostgreSQL with ORM SQLAlchemy (async).
+- Database migrations using Alembic.
+- Clean architecture with ORM models, repositories, services, and routers.
+
+## 📂 Features Implemented
+
+- ✅ Dependency injection using FastAPI Depends.
+- ✅ Unit tests with pytest and httpx.
+- ✅ Docker and Docker Compose setup.
+- ✅ Proper logging throughout the application.
+- ✅ Error handling with custom exceptions.
+- ✅ Async database operations for high performance.
